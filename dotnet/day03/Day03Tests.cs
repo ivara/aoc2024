@@ -30,8 +30,7 @@ public class Day03Tests(ITestOutputHelper output)
     [InlineData("day03/MyInput.txt", 180233229)]
     public void Part1(string file, int expected)
     {
-        var stopWatch = new Stopwatch();
-        stopWatch.Start();
+        var stopWatch = Stopwatch.StartNew();
 
         // Read all lines from a txt file
         var lines = File.ReadAllLines(file);
