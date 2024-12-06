@@ -22,12 +22,11 @@ public class Day05Tests(ITestOutputHelper output)
     // WIP: this is not impressive :D
     private void RunTest(Func<string[], int> solver, string file, int expected)
     {
-        var stopWatch = new Stopwatch();
-        stopWatch.Start();
-
         // Read all lines from a txt file
         var lines = File.ReadAllLines(file);
-        output.WriteLine($"Read file from disk to memory: {stopWatch.ElapsedMilliseconds}ms");
+
+        var stopWatch = Stopwatch.StartNew();
+        // output.WriteLine($"Read file from disk to memory: {stopWatch.ElapsedMilliseconds}ms");
 
         var result = solver(lines);
         output.WriteLine($"Time: {stopWatch.ElapsedMilliseconds}ms");
@@ -36,13 +35,70 @@ public class Day05Tests(ITestOutputHelper output)
     }
 
     [Theory]
-    [InlineData("day05/test01.txt", 143)]
-    // [InlineData("day05/MyInput.txt", 2514)]
+   // [InlineData("day05/test01.txt", 143)]
+    [InlineData("day05/MyInput.txt", 4135)]
     public void Part1(string file, int expected)
     {
+        RunTest(IvarSolvePart1, file, expected);
         RunTest(SolvePart1, file, expected);
     }
 
+    private int IvarSolvePart1(string[] lines)
+    {
+        // split lines into rules and pages
+        // by finding an empty line
+        var emptyLine = Array.IndexOf(lines, string.Empty);
+        var rules = lines
+            .Take(emptyLine)
+            .Select(rule =>
+            {
+                var sides = rule.Split('|');
+                return (left: int.Parse(sides[0]), right: int.Parse(sides[1]));
+            }).ToList();
+        
+        var pages = lines
+            .Skip(emptyLine + 1)
+            .Select(page => page.Split(',').Select(int.Parse).ToArray())
+            .ToList();
+        
+
+        // Find valid pages
+        var validPages = new List<int[]>();
+        foreach (var page in pages)
+        {
+            var isValidPage = true;
+            
+            // test all rules against the page and make sure they are all valid
+            for (var r = 0; r < rules.Count && isValidPage; r++)
+            {
+                var (left, right) = rules[r];
+               
+                var leftIndex = Array.IndexOf(page, left);
+                var rightIndex = Array.IndexOf(page, right);
+                if (leftIndex == -1 || rightIndex == -1)
+                {
+                    continue;
+                }
+
+                if (leftIndex > rightIndex)
+                {
+                    isValidPage = false;
+                }
+            }
+
+            // If isValidPage is still true, we add the page to validPages
+            if (isValidPage)
+            {
+                validPages.Add(page);
+            }
+        }
+        
+        // get mid value from valid pages
+        var sum = validPages.Sum(page => page[page.Length / 2]);
+
+        return sum;
+    }
+    
     private int SolvePart1(string[] lines)
     {
         // Find the empty line
