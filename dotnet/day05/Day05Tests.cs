@@ -45,6 +45,25 @@ public class Day05Tests(ITestOutputHelper output)
 
     private int SolvePart1(string[] lines)
     {
+        // Find the empty line
+        var emptyLine = Array.IndexOf(lines, string.Empty);
+        var rules = lines.Take(emptyLine);
+        var pages = lines.Skip(emptyLine + 1);
+        
+        // Create a dictionary with the rules
+        var dict = new Dictionary<int, List<int>>();
+        foreach (var rule in rules)
+        {
+            var parts = rule.Split('|');
+            var key = int.Parse(parts[0]);
+            var value = int.Parse(parts[1]);
+            if (!dict.ContainsKey(key))
+            {
+                dict[key] = [];
+            }
+            dict[key].Add(value);
+        }
+        
         return 0;
     }
     
