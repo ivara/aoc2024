@@ -28,13 +28,13 @@ public class Day05Tests(ITestOutputHelper output)
         // Read all lines from a txt file
         var lines = File.ReadAllLines(file);
         output.WriteLine($"Read file from disk to memory: {stopWatch.ElapsedMilliseconds}ms");
-        
+
         var result = solver(lines);
         output.WriteLine($"Time: {stopWatch.ElapsedMilliseconds}ms");
 
         Assert.Equal(expected, result);
     }
-    
+
     [Theory]
     [InlineData("day05/test01.txt", 143)]
     // [InlineData("day05/MyInput.txt", 2514)]
@@ -49,27 +49,71 @@ public class Day05Tests(ITestOutputHelper output)
         var emptyLine = Array.IndexOf(lines, string.Empty);
         var rules = lines.Take(emptyLine);
         var pages = lines.Skip(emptyLine + 1);
-        
+
         // Create a dictionary with the rules
-        var dict = new Dictionary<int, List<int>>();
+        var rightDict = new Dictionary<int, List<int>>();
+        var leftDict = new Dictionary<int, List<int>>();
         foreach (var rule in rules)
         {
             var parts = rule.Split('|');
-            var key = int.Parse(parts[0]);
-            var value = int.Parse(parts[1]);
-            if (!dict.ContainsKey(key))
+            var left = int.Parse(parts[0]);
+            var right = int.Parse(parts[1]);
+            if (!rightDict.ContainsKey(left))
             {
-                dict[key] = [];
+                rightDict[left] = [];
             }
-            dict[key].Add(value);
+
+            rightDict[left].Add(right);
+
+            if (!leftDict.ContainsKey(right))
+            {
+                leftDict[right] = [];
+            }
+
+            leftDict[right].Add(left);
         }
-        
-        return 0;
-    }
-    
-    [Benchmark]
-    public void Part1Benchmark()
-    {
-        RunTest(SolvePart1, "day05/MyInput.txt", 2514);
+
+        var okPages = new List<string>();
+
+        foreach (var page in pages)
+        {
+            var pageOk = true;
+
+            var parts = page.Split(',');
+            for (int i = 0; i < parts.Length; i++)
+            {
+                var key = int.Parse(parts[i]);
+                // assign lefty and righty  variables the dictionary entry if exists, otherwise assign an empty list
+                var lefty = leftDict.ContainsKey(key) ? leftDict[key] : [];
+                var righty = rightDict.ContainsKey(key) ? rightDict[key] : [];
+                // check left and right side of current entry against the dictionaries
+                var leftSide = parts.Take(i);
+                var rightSide = parts.Skip(i).Take(parts.Length - i);
+                var leftNotOk = lefty.Any(left => rightSide.Contains(left.ToString()));
+                var rightNotOk = righty.Any(right => leftSide.Contains(right.ToString()));
+                if (leftNotOk || rightNotOk)
+                {
+                    pageOk = false;
+                    break;
+                }
+            }
+
+            if (pageOk)
+            {
+                okPages.Add(page);
+            }
+        }
+
+        var sum = 0;
+
+        foreach (var okPage in okPages)
+        {
+            var okParts = okPage.Split(',');
+            // Get the middle entry in the string
+            var middle = okParts[okParts.Length / 2];
+            sum += int.Parse(middle);
+        }
+
+        return sum;
     }
 }
