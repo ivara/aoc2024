@@ -64,6 +64,7 @@ public class Day05Tests(ITestOutputHelper output)
 
         // Find valid pages
         var validPages = new List<int[]>();
+        var invalidPages = new List<int[]>();
         foreach (var page in pages)
         {
             var isValidPage = true;
@@ -83,6 +84,7 @@ public class Day05Tests(ITestOutputHelper output)
                 if (leftIndex > rightIndex)
                 {
                     isValidPage = false;
+                    invalidPages.Add(page);
                 }
             }
 
