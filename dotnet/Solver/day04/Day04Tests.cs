@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using BenchmarkDotNet.Attributes;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -9,6 +10,13 @@ namespace AdventofCode2024.Day04;
 */
 public class Day04Tests(ITestOutputHelper output)
 {
+
+    [Benchmark]
+    public void Benchmark()
+    {
+        Part1("day04/MyInput.txt", 2514);
+    }
+    
     [Theory]
     [InlineData("day04/test01.txt", 18)]
     [InlineData("day04/MyInput.txt", 2514)]
