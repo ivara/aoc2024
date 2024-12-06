@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using BenchmarkDotNet.Attributes;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -45,5 +46,11 @@ public class Day05Tests(ITestOutputHelper output)
     private int SolvePart1(string[] lines)
     {
         return 0;
+    }
+    
+    [Benchmark]
+    public void Part1Benchmark()
+    {
+        RunTest(SolvePart1, "day05/MyInput.txt", 2514);
     }
 }
