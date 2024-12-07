@@ -36,13 +36,13 @@ public class Day05Tests(ITestOutputHelper output)
 
     [Theory]
     // [InlineData("day05/test01.txt", 143)]
-    [InlineData("day05/MyInput.txt", 5087)]
+    [InlineData("day05/MyInput.txt", 4135)]
     public void Part1(string file, int expected)
     {
         RunTest(IvarSolvePart1, file, expected);
         RunTest(SolvePart1, file, expected);
     }
-    
+
     // --- Part Two ---
     // While the Elves get to work printing the correctly-ordered updates, you have a little time to fix the rest of them.
     //
@@ -54,13 +54,157 @@ public class Day05Tests(ITestOutputHelper output)
     // After taking only the incorrectly-ordered updates and ordering them correctly, their middle page numbers are 47, 29, and 47. Adding these together produces 123.
     //
     // Find the updates which are not in the correct order. What do you get if you add up the middle page numbers after correctly ordering just those updates?
-    
+
     [Theory]
     // [InlineData("day05/test01.txt", 143)]
-    [InlineData("day05/test01.txt", 123)]
+    [InlineData("day05/MyInput.txt", 4135)]
     public void Part2(string file, int expected)
     {
-        RunTest(SolvePart2, file, expected);
+
+        RunTest(IvarSolvePart2, file, expected);
+    }
+
+
+    private int[] CreateSortedRules(List<(int left, int right)> rules)
+    {
+        // Create a list with the distinct numbers from the rules
+        // then write a custom comparer to sort the list
+        // according to the rules, a "left" int must always be left of a "right" int
+
+        var distinctNumbers = rules.SelectMany(rule => new[] {rule.left, rule.right}).Distinct().ToList();
+        Sort(rules, distinctNumbers);
+        // distinctNumbers.Sort((a, b) =>
+        // {
+        //     var aIndex = rules.FindIndex(rule => rule.right == a);
+        //     var bIndex = rules.FindIndex(rule => rule.right == b);
+        //     return aIndex.CompareTo(bIndex);
+        // });
+
+        List<int> Sort(List<(int left, int right)> rules, List<int> numbers)
+        {
+            var copy = new List<int>(numbers);
+            numbers.Sort((a,b) =>
+            {
+                // option 1
+                // a should be left of b
+                var isOptionOne = rules.Where((tuple) => tuple.left == a && tuple.right == b).Any();
+                var isOptionTwo = rules.Where((tuple) => tuple.left == b && tuple.right == a).Any();
+                if (isOptionOne)
+                {
+                    return -1;
+                }
+                if(isOptionTwo)
+                {
+                    return 1;
+                }
+
+                return 0;
+                // var aIndex = rules.FindIndex(rule => rule.right == a);
+                // var bIndex = rules.FindIndex(rule => rule.right == b);
+                // return aIndex.CompareTo(bIndex);
+            });
+
+            // Compare the orders of elements in the copy and numbers
+            // if they are the same, return numbers
+            // if they are different, call Sort again
+            if(!copy.SequenceEqual(numbers))
+            {
+                return Sort(rules, numbers);
+            }
+
+            return numbers;
+        }
+
+        return distinctNumbers.ToArray();
+    }
+
+
+    private int IvarSolvePart2(string[] lines)
+    {
+        // Phase 1: read the rules and sort its numbers into correct solution order
+        // using a custom comparer
+        var rules = GetRules(lines);
+        var sortedRules = CreateSortedRules(rules);
+
+        // Phase 2: get all invalid pages and reorder their ints according to the solution order
+        var pages = GetPages(lines);
+        var (validPages, invalidPages) = ValidatePages(pages, rules);
+
+        var sum = 0;
+        foreach (var invalidPage in invalidPages)
+        {
+            // Take the sortedRules and remove all numbers not in the invalidPage
+            // that should give us an array that is the invalidPage but in correct order
+            int[] d = sortedRules
+                .Where(i => invalidPage.Contains(i))
+                .ToArray();
+
+            // var fixedPage = invalidPage.OrderBy(i => Array.IndexOf(sortedRules, i)).ToArray();
+            sum += d[d.Length / 2];
+        }
+        return sum;
+    }
+
+    private List<int[]> GetPages(string[] lines)
+    {
+        var emptyLine = Array.IndexOf(lines, string.Empty);
+        var pages = lines
+            .Skip(emptyLine + 1)
+            .Select(page => page.Split(',').Select(int.Parse).ToArray())
+            .ToList();
+        return pages;
+    }
+
+    private List<(int left, int right)> GetRules(string[] lines)
+    {
+        var emptyLine = Array.IndexOf(lines, string.Empty);
+        var rules = lines
+            .Take(emptyLine)
+            .Select(rule =>
+            {
+                var sides = rule.Split('|');
+                return (left: int.Parse(sides[0]), right: int.Parse(sides[1]));
+            }).ToList();
+
+        return rules;
+    }
+
+    private (List<int[]> validPages, List<int[]> invalidPages) ValidatePages(List<int[]> pages, List<(int left, int right)> rules)
+    {
+        var validPages = new List<int[]>();
+        var invalidPages = new List<int[]>();
+        foreach (var page in pages)
+        {
+            var isValidPage = true;
+
+            // test all rules against the page and make sure they are all valid
+            for (var r = 0; r < rules.Count && isValidPage; r++)
+            {
+                var (left, right) = rules[r];
+
+                var leftIndex = Array.IndexOf(page, left);
+                var rightIndex = Array.IndexOf(page, right);
+                if (leftIndex == -1 || rightIndex == -1)
+                {
+                    continue;
+                }
+
+                if (leftIndex > rightIndex)
+                {
+                    isValidPage = false;
+                    invalidPages.Add(page);
+                }
+            }
+
+            // If isValidPage is still true, we add the page to validPages
+            if (isValidPage)
+            {
+                validPages.Add(page);
+            }
+
+        }
+
+        return (validPages, invalidPages);
     }
 
     private int IvarSolvePart1(string[] lines)
@@ -75,12 +219,12 @@ public class Day05Tests(ITestOutputHelper output)
                 var sides = rule.Split('|');
                 return (left: int.Parse(sides[0]), right: int.Parse(sides[1]));
             }).ToList();
-        
+
         var pages = lines
             .Skip(emptyLine + 1)
             .Select(page => page.Split(',').Select(int.Parse).ToArray())
             .ToList();
-        
+
 
         // Find valid pages
         var validPages = new List<int[]>();
@@ -88,12 +232,12 @@ public class Day05Tests(ITestOutputHelper output)
         foreach (var page in pages)
         {
             var isValidPage = true;
-            
+
             // test all rules against the page and make sure they are all valid
             for (var r = 0; r < rules.Count && isValidPage; r++)
             {
                 var (left, right) = rules[r];
-               
+
                 var leftIndex = Array.IndexOf(page, left);
                 var rightIndex = Array.IndexOf(page, right);
                 if (leftIndex == -1 || rightIndex == -1)
@@ -114,13 +258,13 @@ public class Day05Tests(ITestOutputHelper output)
                 validPages.Add(page);
             }
         }
-        
+
         // get mid value from valid pages
         var sum = validPages.Sum(page => page[page.Length / 2]);
 
         return sum;
     }
-    
+
     private int SolvePart1(string[] lines)
     {
         // Find the empty line
@@ -201,14 +345,14 @@ public class Day05Tests(ITestOutputHelper output)
 
         return sum;
     }
-    
+
     private int SolvePart2(string[] lines)
     {
         // Find the empty line
         var emptyLine = Array.IndexOf(lines, string.Empty);
         var rules = lines.Take(emptyLine);
         var pages = lines.Skip(emptyLine + 1);
-        
+
         // Create a dictionary with the rules
         var rightDict = new Dictionary<int, List<int>>();
         var leftDict = new Dictionary<int, List<int>>();
@@ -233,16 +377,16 @@ public class Day05Tests(ITestOutputHelper output)
 
             lValue.Add(left);
         }
-        
+
         // Go through  every page in pages and create one int array of all lines in pages
         var allPages = pages.SelectMany(page => page.Split(',').Select(int.Parse)).ToArray().Distinct();
         // Select all keys from leftDict to int array
         var leftKeys = leftDict.Keys.ToArray();
         // Compare if any of the keys in leftKeys are not in allPages
         var invalidPages = leftKeys.Where(key => !allPages.Contains(key)).ToArray();
-        
-        // 
-        
+
+        //
+
         // Create hashmap with the rule numbers
         // Remove from hashmap the numbers that never exists in the input
         // Create a sorted array of the remaining numbers in hashmap according to sorting rules - Answer
