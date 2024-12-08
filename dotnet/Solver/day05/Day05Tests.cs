@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AdventOfCode2024.Solver.day05;
 using BenchmarkDotNet.Attributes;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -100,8 +101,8 @@ public class Day05Tests(ITestOutputHelper output)
     }
 
     [Theory]
-    // [InlineData("day05/test01.txt", 143)]
-    [InlineData("day05/MyInput.txt", 4135)]
+    [InlineData("day05/test01.txt", 143)]
+    // [InlineData("day05/MyInput.txt", 4135)]
     public void Part1(string file, int expected)
     {
         RunTest(IvarSolvePart1, file, expected);
@@ -120,14 +121,31 @@ public class Day05Tests(ITestOutputHelper output)
     //
     // Find the updates which are not in the correct order. What do you get if you add up the middle page numbers after correctly ordering just those updates?
 
+
+    // THIS IS THE CORRECT ANSWER
+    [Fact]
+    public void EuphoriumPartB() {
+        // Arrange
+        var expected = 5285;
+        var file = "day05/MyInput.txt";
+        var solver = new Day5Solver();
+
+        // Act
+        var input = File.ReadAllLines(file);
+        var result = solver.SolvePartB(input);
+
+        // Assert
+        Assert.Equal(expected, int.Parse(result));
+    }
+
     [Theory]
-    // [InlineData("day05/test01.txt", 143)]
-    [InlineData("day05/MyInput.txt", 4135)]
+    // [InlineData("day05/test01.txt", 123)]
+    [InlineData("day05/MyInput.txt", 5285)]
     public void Part2(string file, int expected)
     {
-
         RunTest(IvarSolvePart2, file, expected);
     }
+
 
     private void Sort2(List<(int left, int right)> rules, List<int> numbers)
     {
@@ -215,7 +233,15 @@ public class Day05Tests(ITestOutputHelper output)
         // Phase 1: read the rules and sort its numbers into correct solution order
         // using a custom comparer
         var rules = GetRules(lines);
-        var sortedRules = CreateSortedRules(rules);
+        var uniqueNumbers = rules
+            .SelectMany(rule => new[] {rule.left, rule.right})
+            .Distinct()
+            .ToHashSet();
+        var r = rules.Select((item) => new Tuple<int,int>(item.left, item.right)).ToHashSet();
+
+        var sortedRules = TopologicalSort.Sort(uniqueNumbers, r).ToArray();
+
+        // var sortedRules = CreateSortedRules(rules);
 
         // Phase 2: get all invalid pages and reorder their ints according to the solution order
         var pages = GetPages(lines);
