@@ -21,9 +21,20 @@ public class Day06Solver(ITestOutputHelper output)
         Assert.Equal(expected, result);
     }
 
+    
+    [Fact]
+    public async Task MartinZikmundSolverPart2()
+    {
+        // Correct answer is 1812
+        
+        var solver = new AoC2024Day6Part2();
+        var result = await solver.SolveAsync(new StreamReader("day06/MyInput.txt"));
+        Assert.Equal("1812", result);
+    }
+    
     [Theory]
-    [InlineData("day06/test01.txt", 41)]
-    // [InlineData("day05/MyInput.txt", 4135)]
+    // [InlineData("day06/test01.txt", 41)]
+    [InlineData("day06/MyInput.txt", 4135)]
     public void SolvePart1(string file, int expected)
     {
         var lines = File.ReadAllLines(file);
@@ -98,6 +109,7 @@ public class Day06Solver(ITestOutputHelper output)
                 break;
 
             currentPosition = nextPosition;
+            currentDirection = nextDirection;
         }
 
         return distinctPositions.Count();
