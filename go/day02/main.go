@@ -8,9 +8,20 @@ import (
 	"strings"
 )
 
+var directions = [8][2]int{
+	{1, 0},   // right
+	{1, -1},  // right-down
+	{0, -1},  // down
+	{-1, -1}, // down-left
+	{-1, 0},  // left
+	{-1, 1},  // left-up
+	{0, 1},   // up
+	{1, 1},   // up-right
+}
+
 func main() {
-	// input := readFileContents("test.txt")
-	input := readFileContents("input.txt")
+	input := readFileContents("test.txt")
+	// input := readFileContents("input.txt")
 	result := part1(input)
 
 	fmt.Println("Result: ", result)
