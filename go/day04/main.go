@@ -48,6 +48,33 @@ func part1(input string) int {
 	return sum
 }
 
+func part2(input string) int {
+	var sum = 0
+	var lines = strings.Split(input, "\n")
+
+	// skip looking outer border of grid
+	// because we look for the A and the surrounding M and S
+	for y := 1; y < len(lines)-1; y++ {
+		line := lines[y]
+		for x := 1; x < len(line)-1; x++ {
+			if line[x] != 'A' {
+				continue
+			}
+			backslashWord := string(lines[y-1][x-1]) + string(lines[y+1][x+1])
+			slashWord := string(lines[y-1][x+1]) + string(lines[y+1][x-1])
+
+			if isValidSlashword(backslashWord) && isValidSlashword(slashWord) {
+				sum += 1
+			}
+		}
+	}
+	return sum
+}
+
+func isValidSlashword(surrounding string) bool {
+	return surrounding == "MS" || surrounding == "SM"
+}
+
 func getWord(lines []string, row int, col int, direction [2]int) string {
 	word := []byte{lines[row][col]}
 	for {
@@ -62,10 +89,6 @@ func getWord(lines []string, row int, col int, direction [2]int) string {
 		}
 	}
 	return string(word)
-}
-
-func part2(input string) int {
-	return 0
 }
 
 func readFileContents(filePath string) string {

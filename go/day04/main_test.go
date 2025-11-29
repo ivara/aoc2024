@@ -42,7 +42,7 @@ MXMXAXMASX`
 	}
 }
 
-func TestMain(t *testing.T) {
+func TestMainPart1(t *testing.T) {
 	input := readFileContents("input.txt")
 
 	expected := 2514
@@ -52,6 +52,17 @@ func TestMain(t *testing.T) {
 		t.Errorf("Got = %v; want %v", got, expected)
 	}
 }
+func TestMainPart2(t *testing.T) {
+	input := readFileContents("input.txt")
+
+	expected := 1888
+	got := part2(input)
+
+	if got != expected {
+		t.Errorf("Got = %v; want %v", got, expected)
+	}
+}
+
 func TestPart2(t *testing.T) {
 	input := `.M.S......
 ..A..MSMS.
