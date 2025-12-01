@@ -92,6 +92,7 @@ func TestTurnDial(t *testing.T) {
 	}{
 		// No movement cases
 		{"example", 50, 1000, 10},
+		{"example", 50, -1001, 10},
 		{"iavr", 50, 150, 2},
 		{"iavr", 99, 1, 1},
 		{"ivar 2", 0, 100, 1},

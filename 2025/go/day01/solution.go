@@ -72,7 +72,7 @@ func turnDial(start int, move int) (newDialValue, zeroTicks int) {
 			// }
 
 			// did we tick 0 again?
-			if start > 0 && (start+move <= 0) {
+			if start > 0 && (start+rest <= 0) {
 				zeroTicks += 1
 			}
 			break
