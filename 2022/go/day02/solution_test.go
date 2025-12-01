@@ -4,31 +4,6 @@ import (
 	"testing"
 )
 
-func TestPart2(t *testing.T) {
-	input := `1000
-2000
-3000
-
-4000
-
-5000
-6000
-
-7000
-8000
-9000
-
-10000
-`
-
-	got := part2(input)
-	want := 45000
-
-	if got != want {
-		t.Errorf("Got = %v; want %v", got, want)
-	}
-}
-
 func TestPart1(t *testing.T) {
 	input := `1000
 2000

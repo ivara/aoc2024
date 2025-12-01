@@ -1,11 +1,23 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"os"
+)
 
 func main() {
-	fmt.Println("Hello from day2")
+	input := readFileContents("input.txt")
+	result := part1(input)
+
+	fmt.Println("Result: ", result)
 }
 
-func part1(input string) int {
-	return 0
+func readFileContents(filePath string) string {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Fatal("Error reading file:", err)
+	}
+
+	return string(data)
 }
