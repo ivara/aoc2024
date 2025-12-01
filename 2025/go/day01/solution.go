@@ -58,18 +58,18 @@ func part2(input string) int {
 
 // Returns how many times we landed on Zero
 func turnDial(start int, move int) (newDialValue, zeroTicks int) {
-	N := 100
-	zeroTicks = Abs(move / N)
-	rest := move % N
-	newDialValue = (start + move) % 100
+	wheelSize := 100
+	zeroTicks = Abs(move / wheelSize)
+	rest := move % wheelSize
+	newDialValue = (((start + move) % wheelSize) + wheelSize) % 100
 
 	switch rest < 0 {
 	case true:
 		{
 			// moving counter clock-wise (negative move)
-			if newDialValue < 0 {
-				newDialValue += 100 // if we have "-18" this becomes +82
-			}
+			// if newDialValue < 0 {
+			// 	newDialValue += 100 // if we have "-18" this becomes +82
+			// }
 
 			// did we tick 0 again?
 			if start > 0 && (start+move <= 0) {
@@ -80,8 +80,8 @@ func turnDial(start int, move int) (newDialValue, zeroTicks int) {
 	case false:
 		{
 			// moving clock-wise (positive move)
-			newDialValue = (start + move) % 100
-			if start != 0 && start+move > 99 {
+			// newDialValue = (start + move) % 100
+			if start != 0 && start+rest > 99 {
 				zeroTicks += 1
 			}
 			break

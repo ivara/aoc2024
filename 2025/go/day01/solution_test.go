@@ -91,7 +91,9 @@ func TestTurnDial(t *testing.T) {
 		expected int
 	}{
 		// No movement cases
+		{"example", 50, 1000, 10},
 		{"iavr", 50, 150, 2},
+		{"iavr", 99, 1, 1},
 		{"ivar 2", 0, 100, 1},
 		{"ivar 2", 52, 48, 1},
 		{"ivar 2", 0, -5, 0},
@@ -149,6 +151,7 @@ func TestTurnDial(t *testing.T) {
 
 // Part 2: 6528 is too high
 // Part 2: 6482, incorrect (får ej veta om för högt eller lågt)
+// Part: 6390 incorrect
 func TestPart2(t *testing.T) {
 	input := `L68
 L30
