@@ -60,28 +60,25 @@ func part2(input string) int {
 func turnDial(start int, move int) (newDialValue, zeroTicks int) {
 	wheelSize := 100
 	zeroTicks = Abs(move / wheelSize)
-	rest := move % wheelSize
+	remainder := move % wheelSize
 	newDialValue = (((start + move) % wheelSize) + wheelSize) % 100
 
-	switch rest < 0 {
+	// Different logic for clockwise vs counter clockwise
+	switch move < 0 {
 	case true:
 		{
-			// moving counter clock-wise (negative move)
-			// if newDialValue < 0 {
-			// 	newDialValue += 100 // if we have "-18" this becomes +82
-			// }
-
-			// did we tick 0 again?
-			if start > 0 && (start+rest <= 0) {
+			// the remainder can only cause "pointing" on 0
+			// if we didn't start on 0
+			// Looks a bit wonky with "start+remainder"
+			// but remainder is a negative number
+			if start > 0 && (start+remainder <= 0) {
 				zeroTicks += 1
 			}
 			break
 		}
 	case false:
 		{
-			// moving clock-wise (positive move)
-			// newDialValue = (start + move) % 100
-			if start != 0 && start+rest > 99 {
+			if start+remainder > 99 {
 				zeroTicks += 1
 			}
 			break
@@ -89,7 +86,6 @@ func turnDial(start int, move int) (newDialValue, zeroTicks int) {
 	}
 
 	// fmt.Printf("Laps %v and rest %v", laps, rest)
-
 	fmt.Printf("Start %v, move %v, zeroTicks = %v\n", start, move, zeroTicks)
 	return newDialValue, zeroTicks
 }
@@ -99,48 +95,4 @@ func Abs(x int) int {
 		return -x
 	}
 	return x
-}
-
-// Imagine a wheel consisting of 0 - N numbers
-// once you go beyond N, you are back on 0 and continue from there
-// This method tells you how many times you passed 0
-// excluding if it landed on a zero
-func ZeroCrossings(start, move int) int {
-	N := 100
-
-	if move == 0 || (move > 0 && (start+move) <= N) {
-		return 0
-	}
-
-	if move < 0 && (start+move >= 0) {
-		return 0
-	}
-
-	if start == 0 && Abs(move) <= N {
-		return 0
-	}
-
-	// how many full laps? (move 595 for example, is 5 guaranteeed, and 95 might be one more)
-	// and on final lap, did we cross 0 ?
-
-	// How many times do we pass 0?????
-	// diff is -1, crossed 0 once
-	laps := Abs(move) / N
-
-	rest := move % N
-
-	johan := start + rest
-	if johan < 0 || johan > 99 {
-		return laps + 1
-	} else {
-		return laps
-	}
-
-	// if move < 0 && rest > start {
-	// 	return laps + 1
-	// } else if move > 0 && (N-start) < move {
-	// 	return laps + 1
-	// } else {
-	// 	return laps
-	// }
 }
