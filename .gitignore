@@ -399,3 +399,4 @@ http-client.private.env.json
 
 !/packages_manual/*.nupkg
 *.swp
+input.txt
