@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func part1(input string) int {
@@ -105,4 +106,51 @@ func isRepeating(s string) bool {
 		}
 	}
 	return false
+}
+
+func part2v3(input string) int {
+	var wg sync.WaitGroup
+	results := make(chan int)
+
+	// Convert iterator to slice so we can spawn goroutines
+	ranges := strings.SplitSeq(input, ",")
+	sequences := make([]string, 0)
+	for sequence := range ranges {
+		sequences = append(sequences, sequence)
+	}
+
+	// Process each sequence in a separate goroutine
+	for _, sequence := range sequences {
+		wg.Add(1)
+		go func(seq string) {
+			defer wg.Done()
+			partialSum := 0
+
+			parts := strings.Split(seq, "-")
+			start, _ := strconv.Atoi(parts[0])
+			stop, _ := strconv.Atoi(parts[1])
+
+			for current := start; current <= stop; current++ {
+				if isInvalidId(current) {
+					partialSum += current
+				}
+			}
+
+			results <- partialSum
+		}(sequence)
+	}
+
+	// Close results channel when all goroutines complete
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	// Sum up all partial results
+	sum := 0
+	for partialSum := range results {
+		sum += partialSum
+	}
+
+	return sum
 }
