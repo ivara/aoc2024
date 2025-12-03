@@ -41,8 +41,51 @@ func part1(input string) int {
 	return sum
 }
 
+// Turn on 12 batteries
 func part2(input string) int {
-	sum := 0
+	var sum int = 0
+
+	lines := strings.SplitSeq(input, "\n")
+	for line := range lines {
+		// Process one line at a time
+		sum += getJoltage(line, 12)
+	}
 
 	return sum
+}
+
+func getJoltage(s string, size int) int {
+	fullLength := len(s)
+	ogArr := make([]byte, len(s))
+	windowStart := 0
+
+	joltages := make([]byte, size)
+
+	// copy
+	for i, r := range s {
+		ogArr[i] = byte(r)
+	}
+
+	// make temporary variable to hold our "current window" to search in
+	// it is never larger than from pos 0 to length-size
+	// window := make([]byte, (fullLength-size)+1)
+
+	// Set joltages
+	for i := 1; i <= size; i++ {
+		// find greatest number in string, except (size-i) last positions
+		// e.g. finding the first out of twelve, we need 11 more
+		windowStop := fullLength - (size - i)
+		slidingWindow := make([]byte, windowStop-windowStart)
+		copy(slidingWindow, s[windowStart:windowStop])
+
+		// sort window and find largest number
+		slices.Sort(slidingWindow)
+		joltage := slidingWindow[len(slidingWindow)-1]
+		joltages[i-1] = joltage
+		windowStart = slices.Index(ogArr[windowStart:windowStop], joltage) + 1 + windowStart
+	}
+
+	// Build
+	yay, _ := strconv.Atoi(string(joltages))
+	return yay
 }
