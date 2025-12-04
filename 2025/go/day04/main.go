@@ -22,11 +22,11 @@ func main() {
 	fmt.Printf("Result part2: %v in %v ms\n ", result2, part2time)
 }
 
-func readFileContents(filePath string) string {
+func readFileContents(filePath string) []byte {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Fatal("Error reading file:", err)
 	}
 
-	return string(data)
+	return data
 }

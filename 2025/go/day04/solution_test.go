@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"log"
+	"os"
+	"testing"
+)
 
 // func TestIsValidId(t *testing.T) {
 // 	tests := []struct {
@@ -49,7 +53,7 @@ import "testing"
 // }
 
 func TestPart1(t *testing.T) {
-	input := `..@@.@@@@.
+	input := []byte(`..@@.@@@@.
 @@@.@.@.@@
 @@@@@.@.@@
 @.@@@@..@.
@@ -58,7 +62,7 @@ func TestPart1(t *testing.T) {
 .@.@.@.@@@
 @.@@@.@@@@
 .@@@@@@@@.
-@.@.@@@.@.`
+@.@.@@@.@.`)
 	got := part1(input)
 	want := 13
 
@@ -68,7 +72,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	input := `..@@.@@@@.
+	input := []byte(`..@@.@@@@.
 @@@.@.@.@@
 @@@@@.@.@@
 @.@@@@..@.
@@ -77,7 +81,7 @@ func TestPart2(t *testing.T) {
 .@.@.@.@@@
 @.@@@.@@@@
 .@@@@@@@@.
-@.@.@@@.@.`
+@.@.@@@.@.`)
 	got := part2(input)
 	want := 43
 
@@ -108,27 +112,34 @@ func TestPart2(t *testing.T) {
 
 // // part1 correct answer: 24157613387
 
-// // ---------------------------------------------------
-// //
-// //	BENCHMARKS
-// //
-// // ---------------------------------------------------
-// func BenchmarkPart2(b *testing.B) {
-// 	input := `11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124`
-// 	for b.Loop() {
-// 		part2(input)
-// 	}
-// }
-// func BenchmarkPart2v2(b *testing.B) {
-// 	input := `11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124`
-// 	for b.Loop() {
-// 		part2v2(input)
-// 	}
-// }
+// ---------------------------------------------------
+//
+//	BENCHMARKS
+//
+// ---------------------------------------------------
+func BenchmarkPart2TestData(b *testing.B) {
+	input := []byte(`..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@.`)
 
-// func BenchmarkPart2v3(b *testing.B) {
-// 	input := `11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124`
-// 	for b.Loop() {
-// 		part2v3(input)
-// 	}
-// }
+	for b.Loop() {
+		part2(input)
+	}
+}
+func BenchmarkPart2RealData(b *testing.B) {
+	data, err := os.ReadFile("input.txt")
+	if err != nil {
+		log.Fatal("Error reading file:", err)
+	}
+
+	for b.Loop() {
+		part2(data)
+	}
+}

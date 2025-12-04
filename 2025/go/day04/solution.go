@@ -1,18 +1,12 @@
 package main
 
 import (
-	"strings"
+	"bytes"
 )
 
-func part1(input string) int {
+func part1(input []byte) int {
 	sum := 0
-	lines := strings.Split(input, "\n")
-
-	// Convert strings to byte slices
-	byteLines := make([][]byte, len(lines))
-	for i, line := range lines {
-		byteLines[i] = []byte(line)
-	}
+	lines := bytes.Split(input, []byte{'\n'})
 
 	gridHeight := len(lines)
 	gridWidth := len(lines[0])
@@ -23,7 +17,7 @@ func part1(input string) int {
 			if string(lines[y][x]) == "@" {
 				// check surrounding 8 positions
 				// if more than 3 has "@" this does not get added
-				if isValidPaperRoll(byteLines, gridHeight, gridWidth, x, y) {
+				if isValidPaperRoll(lines, gridHeight, gridWidth, x, y) {
 					sum += 1
 				}
 			}
@@ -34,14 +28,9 @@ func part1(input string) int {
 }
 
 // 9773 too high
-func part2(input string) int {
+func part2(input []byte) int {
 	sum := 0
-	lines := strings.Split(input, "\n")
-	// Convert strings to byte slices
-	byteLines := make([][]byte, len(lines))
-	for i, line := range lines {
-		byteLines[i] = []byte(line)
-	}
+	lines := bytes.Split(input, []byte{'\n'})
 
 	gridHeight := len(lines)
 	gridWidth := len(lines[0])
@@ -52,14 +41,14 @@ func part2(input string) int {
 		// walk through the grid
 		for y := range gridHeight {
 			for x := range gridWidth {
-				if string(byteLines[y][x]) == "@" {
+				if string(lines[y][x]) == "@" {
 					// check surrounding 8 positions
 					// if more than 3 has "@" this does not get added
-					if isValidPaperRoll(byteLines, gridHeight, gridWidth, x, y) {
+					if isValidPaperRoll(lines, gridHeight, gridWidth, x, y) {
 						currentIterationSum += 1
 
 						// IMPORTANT: remove the roll
-						byteLines[y][x] = 'x'
+						lines[y][x] = 'x'
 					}
 				}
 			}
