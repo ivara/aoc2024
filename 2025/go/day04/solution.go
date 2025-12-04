@@ -83,7 +83,7 @@ func isValidPaperRoll(grid [][]byte, gridHeight, gridWidth, x, y int) bool {
 				continue
 			}
 
-			if string(grid[y2][x2]) == "@" {
+			if grid[y2][x2] == '@' {
 				surroundingPaperRolls += 1
 			}
 
